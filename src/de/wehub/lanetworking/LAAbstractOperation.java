@@ -1,4 +1,4 @@
-package com.wehub.lanetworking;
+package de.wehub.lanetworking;
 
 import java.io.ByteArrayOutputStream;
 
