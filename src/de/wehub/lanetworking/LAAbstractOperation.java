@@ -3,6 +3,10 @@ package de.wehub.lanetworking;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 
 import android.os.AsyncTask;
 
@@ -40,7 +44,18 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 	@Override
 	protected LAOperationResult doInBackground(Void... arg0) {
 		try {
-			return onPostProcess(chooseClient().execute(_request.getRequest()),null);
+			LAHTTPClient client = chooseClient();
+			_request.initRequest();
+			if(_request.getCredentials() != null) {
+				//	client.getParams().setAuthenticationPreemptive(true);
+				
+				CredentialsProvider credProvider = new BasicCredentialsProvider();
+			    credProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+		        _request.getCredentials());
+			    client.setCredentialsProvider(credProvider);
+			}
+			
+			return onPostProcess(client.execute(_request.getRequest()),null);
 		} catch(Exception ex) {
 			return onPostProcess(null,ex);
 		}
