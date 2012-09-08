@@ -46,8 +46,6 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 			LAHTTPClient client = chooseClient();
 			_request.initRequest();
 			if(_request.getCredentials() != null) {
-				//	client.getParams().setAuthenticationPreemptive(true);
-				
 				CredentialsProvider credProvider = new BasicCredentialsProvider();
 			    credProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 		        _request.getCredentials());
