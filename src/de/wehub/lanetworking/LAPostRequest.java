@@ -7,6 +7,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 public class LAPostRequest extends LAAbstractRequest {
 
@@ -20,7 +21,7 @@ public class LAPostRequest extends LAAbstractRequest {
 	public void initRequest() {
 		super.initRequest();
 		try {
-			((HttpPost)getRequest()).setEntity(new UrlEncodedFormEntity(_postValues));
+			((HttpPost)getRequest()).setEntity(new UrlEncodedFormEntity(_postValues,HTTP.UTF_8));
 		} catch(Exception ex) {} 
 	}
 	
