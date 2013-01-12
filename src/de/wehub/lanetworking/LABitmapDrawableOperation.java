@@ -19,8 +19,8 @@ public class LABitmapDrawableOperation extends LAAbstractHTTPOperation {
 	}
 
 	@Override
-	public Object convertResponse(HttpResponse response) throws Exception {
-		return new BitmapDrawable(response.getEntity().getContent());
+	public Object convertResponse(LAAbstractRequest request) throws Exception {
+		return new BitmapDrawable(request.getConnection().getInputStream());
 	}
 	
 	@Override

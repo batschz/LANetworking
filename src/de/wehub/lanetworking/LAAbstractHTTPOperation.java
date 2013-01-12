@@ -15,19 +15,19 @@ public abstract class LAAbstractHTTPOperation extends LAAbstractOperation {
 	
 	protected abstract LAAbstractHTTPOperationListener getListener();
 	
-	protected abstract Object convertResponse(HttpResponse response) throws Exception;
+	protected abstract Object convertResponse(LAAbstractRequest request) throws Exception;
 	protected abstract Class<?> getExpectedClass();
 
 	@Override
-	protected LAOperationResult onPostProcess(HttpResponse response,
+	protected LAOperationResult onPostProcess(LAAbstractRequest request,
 			Exception ex) {
 		LAOperationResult result = null;
 		try {
-			if(response != null) {
-				if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					result = new LAOperationResult(convertResponse(response));
+			if(request != null) {
+				if(request.getConnection().getResponseCode() == HttpStatus.SC_OK) {
+					result = new LAOperationResult(convertResponse(request));
 				} else {
-					throw new Exception(response.getStatusLine().getReasonPhrase());
+					throw new Exception(request.getConnection().getResponseMessage());
 				}
 			} else {
 				throw ex;

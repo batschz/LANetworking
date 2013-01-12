@@ -1,22 +1,31 @@
 package de.wehub.lanetworking;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpRequestBase;
 
+import de.wehub.lanetworking.LAAbstractOperation.LAOperationResult;
+
 public abstract class LAAbstractRequest {
 	
-	protected HttpRequestBase _request = null;
+	protected URL _url;
 	protected Credentials _credentials = null;
+	protected HttpURLConnection _connection = null;
 	
-	public LAAbstractRequest(HttpRequestBase request) {
-		_request = request;
+	public LAAbstractRequest(URL url) {
+		_url = url;
 	}
 	
 	public void initRequest() {}
 	
-	public HttpRequestBase getRequest() {
-		return _request;
+	public HttpURLConnection getConnection() {
+		return _connection;
 	}
 	
 	public void setCredentials(String username, String password) {
@@ -25,6 +34,18 @@ public abstract class LAAbstractRequest {
 	
 	public Credentials getCredentials() {
 		return _credentials;
+	}
+	
+	protected void init() throws Exception {
+		_connection = (HttpURLConnection) _url.openConnection();
+	}
+	
+	protected abstract void execute() throws Exception;
+	
+	protected void cleanup() {
+		if(_connection != null) {
+			_connection.disconnect();
+		}
 	}
 	
 }

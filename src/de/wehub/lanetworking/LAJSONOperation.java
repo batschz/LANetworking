@@ -28,8 +28,8 @@ public class LAJSONOperation extends LAAbstractHTTPOperation {
 	
 
 	@Override
-	public Object convertResponse(HttpResponse response) throws Exception {
-		return new JSONObject(getResponseString(response));
+	public Object convertResponse(LAAbstractRequest request) throws Exception {
+		return new JSONObject(getResponseString(request));
 	}
 
 	@Override

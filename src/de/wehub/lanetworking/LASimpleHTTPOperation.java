@@ -16,8 +16,8 @@ public class LASimpleHTTPOperation extends LAAbstractHTTPOperation {
 	}
 
 	@Override
-	public Object convertResponse(HttpResponse response) throws Exception {
-		return getResponseString(response);
+	public Object convertResponse(LAAbstractRequest request) throws Exception {
+		return getResponseString(request);
 	}
 
 	@Override

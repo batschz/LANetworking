@@ -1,6 +1,10 @@
 package de.wehub.lanetworking;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -12,7 +16,6 @@ import android.os.AsyncTask;
 public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstractOperation.LAOperationResult> {
 
 	protected LAAbstractRequest _request = null;
-	protected LAHTTPClient _client = null;
 	
 	public LAAbstractOperation(LAAbstractRequest request) {
 		_request = request;
@@ -23,7 +26,7 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 		super.onPreExecute();
 	}
 	
-	protected abstract LAOperationResult onPostProcess(HttpResponse response, Exception ex);
+	protected abstract LAOperationResult onPostProcess(LAAbstractRequest connection, Exception ex);
 	protected abstract boolean onFinished(Object result, Exception ex);
 	
 	@Override
@@ -42,46 +45,36 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 	
 	@Override
 	protected LAOperationResult doInBackground(Void... arg0) {
+		LAOperationResult result = null;
 		try {
-			LAHTTPClient client = chooseClient();
-			_request.initRequest();
-			if(_request.getCredentials() != null) {
-				CredentialsProvider credProvider = new BasicCredentialsProvider();
-			    credProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-		        _request.getCredentials());
-			    client.setCredentialsProvider(credProvider);
-			}
-			
-			return onPostProcess(client.execute(_request.getRequest()),null);
+			_request.init();
+			_request.execute();
+			result = onPostProcess(_request,null);
+
 		} catch(Exception ex) {
-			return onPostProcess(null,ex);
+			result = onPostProcess(null,ex);
+		} finally {
+			_request.cleanup();
 		}
+		
+		return result;
 	}
+	
 	
 	public void start() {
 		execute();
 	}
 	
-	protected String getResponseString(HttpResponse response) throws Exception {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-        response.getEntity().writeTo(out);
-        out.close();
-        return out.toString();
-	}
-	
-	protected LAHTTPClient chooseClient() {
-		if(_client == null) {
-			return LAHTTPClient.getInstance();
-		}
-		return _client;
-	}
-	
-	public void setClient(LAHTTPClient client) {
-		_client = client;
-	}
-	
-	public LAHTTPClient getClient() {
-		return _client;
+	protected String getResponseString(LAAbstractRequest request) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(request.getConnection().getInputStream()));
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		} 
+		String response = sb.toString();
+		br.close();
+		return response;
 	}
 	
 	protected class LAOperationResult {
