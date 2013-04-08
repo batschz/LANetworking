@@ -31,7 +31,7 @@ public class LAPostRequest extends LAAbstractRequest {
 	public void addPostValue(String key, String	value) {
 		_postValues.add(new BasicNameValuePair(key,value));
 	}
-	
+
 	public void execute() throws Exception {
 	     _connection.setDoOutput(true);
 	     _connection.setChunkedStreamingMode(0);
