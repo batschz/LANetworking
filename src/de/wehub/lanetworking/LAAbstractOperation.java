@@ -2,9 +2,12 @@ package de.wehub.lanetworking;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.util.Calendar;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -12,6 +15,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstractOperation.LAOperationResult> {
 
@@ -49,7 +53,9 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 		try {
 			_request.init();
 			_request.execute();
+			Log.e("NETWORK 10",Calendar.getInstance().toString());
 			result = onPostProcess(_request,null);
+			Log.e("NETWORK 11",Calendar.getInstance().toString());
 
 		} catch(Exception ex) {
 			result = onPostProcess(null,ex);
@@ -65,16 +71,38 @@ public abstract class LAAbstractOperation extends AsyncTask<Void, Void, LAAbstra
 		execute();
 	}
 	
+	protected String readFully(InputStream inputStream)
+	        throws IOException {
+		Log.e("NETWORK 20",Calendar.getInstance().toString());
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    byte[] buffer = new byte[4096];
+	    int length = 0;
+	    while ((length = inputStream.read(buffer)) != -1) {
+	        baos.write(buffer, 0, length);
+	    }
+	    Log.e("NETWORK 21",Calendar.getInstance().toString());
+	    String out =  new String(baos.toByteArray());
+	    Log.e("NETWORK 22",Calendar.getInstance().toString());
+	    return out;
+	}
+	
 	protected String getResponseString(LAAbstractRequest request) throws Exception {
+		/*
+		Log.e("NETWORK 20",Calendar.getInstance().toString());
 		BufferedReader br = new BufferedReader(new InputStreamReader(request.getConnection().getInputStream()));
+		Log.e("NETWORK 21",Calendar.getInstance().toString());
 		StringBuilder sb = new StringBuilder();
 		String line;
+		Log.e("NETWORK 22",Calendar.getInstance().toString());
 		while ((line = br.readLine()) != null) {
 			sb.append(line);
 		} 
+		Log.e("NETWORK 23",Calendar.getInstance().toString());
 		String response = sb.toString();
 		br.close();
 		return response;
+		*/
+		return readFully(request.getConnection().getInputStream());
 	}
 	
 	protected class LAOperationResult {

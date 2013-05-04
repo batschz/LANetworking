@@ -47,6 +47,7 @@ public class LAHTTPClient extends DefaultHttpClient {
 	        HttpParams params = new BasicHttpParams();
 	        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 	        HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+	        
 			
 			SchemeRegistry registry = new SchemeRegistry();
 		    registry.register(new Scheme("http", new PlainSocketFactory(), 80));

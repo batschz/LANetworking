@@ -3,6 +3,7 @@ package de.wehub.lanetworking;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 
 public class LAUploadRequest extends LAAbstractRequest {
@@ -25,6 +26,7 @@ public class LAUploadRequest extends LAAbstractRequest {
 		
 		_connection.setUseCaches(false);
 		_connection.setDoOutput(true);
+		_connection.setDoInput(true);
 
 		_connection.setRequestMethod("POST");
 		_connection.setRequestProperty("Connection", "Keep-Alive");
@@ -34,22 +36,36 @@ public class LAUploadRequest extends LAAbstractRequest {
 		DataOutputStream request = new DataOutputStream(_connection.getOutputStream());
 
 		request.writeBytes(twoHyphens + boundary + crlf);
-		request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=comment.jpg" + crlf);
-		request.writeBytes("Content-Type: image/jpeg");
-		request.writeBytes(crlf);
+		//request.writeBytes("Content-Disposition: form-data; name=\"file\";filename=" + "test.jpg" + crlf);
+		//request.writeBytes("Content-Type: image/jpeg");
 		
-		byte[] data = new byte[4096];
-		int read = 0;
-
+		request.write(String.format("Content-Disposition:form-data;name=\"file\";filename=\"%s\"\r\nContent-Type: image/jpg\r\n\r\n", "test.jpg").getBytes());
+		
 		FileInputStream in = new FileInputStream(upload);
-		while((read = in.read(data, 0, 4096)) != -1) {
-			request.write(data, 0, read);
-		}
+
+		int bytesAvailable = in.available();
+        int maxBufferSize = 4096;
+        // int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+        byte[] buffer = new byte[bytesAvailable];
+
+        // read file and write it into form...
+
+        int bytesRead = in.read(buffer, 0, bytesAvailable);
+
+        while (bytesRead > 0) {
+        	request.write(buffer, 0, bytesAvailable);
+            bytesAvailable = in.available();
+            bytesAvailable = Math.min(bytesAvailable, maxBufferSize);
+            bytesRead = in.read(buffer, 0, bytesAvailable);
+        }
+
+        // send multipart form data necesssary after file data...
+
+        request.writeBytes(crlf);
+        request.writeBytes(twoHyphens + boundary + twoHyphens + crlf + crlf);
 		
 		in.close();
-		
-		request.writeBytes(crlf);
-		request.writeBytes(twoHyphens + boundary + twoHyphens + crlf);
+
 		
 		request.flush();
 		request.close();

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -17,6 +18,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+
+import android.util.Log;
 
 import de.wehub.lanetworking.LAAbstractOperation.LAOperationResult;
 
@@ -33,10 +36,15 @@ public class LAPostRequest extends LAAbstractRequest {
 	}
 
 	public void execute() throws Exception {
+		Log.e("NETWORK 1",Calendar.getInstance().toString());
 	     _connection.setDoOutput(true);
 	     _connection.setChunkedStreamingMode(0);
+	     _connection.setRequestProperty("Connection","Keep-Alive");
+	     Log.e("NETWORK 2",Calendar.getInstance().toString());
 	     OutputStream out = new BufferedOutputStream(_connection.getOutputStream());
+	     Log.e("NETWORK 3",Calendar.getInstance().toString());
 	     new UrlEncodedFormEntity(_postValues,HTTP.UTF_8).writeTo(out);
+	     Log.e("NETWORK 4",Calendar.getInstance().toString());
 	}
 
 }
